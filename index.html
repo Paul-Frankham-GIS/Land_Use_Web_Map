@@ -3,82 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Land Use Map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <title>Land Use Web Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         #map {
-            height: 600px;
             width: 100%;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            height: 600px;
         }
     </style>
 </head>
 <body>
 
-<h1>Land Use Data Map</h1>
-<div id="map"></div>
+    <h1>Land Use Web Map</h1>
+    <div id="map"></div>
 
-<!-- Leaflet JS Library -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <script>
+        // Initialize the map and set its view
+        var map = L.map('map').setView([37.7749, -122.4194], 13); // Centered on San Francisco, change for your area
+        
+        // Add a tile layer (base map) from OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-<!-- Your GeoJSON Land Use Data -->
-<script>
-    var landUseData = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {
-                    "landuse": "Residential"
+        // Example GeoJSON land use data
+        var landUseData = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "landUse": "Residential"
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [-122.422, 37.777],
+                            [-122.415, 37.777],
+                            [-122.415, 37.770],
+                            [-122.422, 37.770],
+                            [-122.422, 37.777]
+                        ]]
+                    }
                 },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[[0, 0], [0, 0.05], [0.05, 0.05], [0.05, 0], [0, 0]]]
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "landUse": "Commercial"
+                    },
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[
+                            [-122.429, 37.773],
+                            [-122.423, 37.773],
+                            [-122.423, 37.767],
+                            [-122.429, 37.767],
+                            [-122.429, 37.773]
+                        ]]
+                    }
                 }
-            },
-            {
-                "type": "Feature",
-                "properties": {
-                    "landuse": "Commercial"
-                },
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [[[0.06, 0], [0.06, 0.05], [0.11, 0.05], [0.11, 0], [0.06, 0]]]
+            ]
+        };
+
+        // Add land use data to the map as GeoJSON
+        L.geoJSON(landUseData, {
+            style: function (feature) {
+                switch (feature.properties.landUse) {
+                    case 'Residential': return {color: "green"};
+                    case 'Commercial': return {color: "blue"};
                 }
             }
-        ]
-    };
-
-    // Initialize the map and set view
-    var map = L.map('map').setView([0.025, 0.025], 13);
-
-    // Add OpenStreetMap tile layer to the map
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // Function to style each land use area
-    function style(feature) {
-        switch (feature.properties.landuse) {
-            case 'Residential': return {color: "green"};
-            case 'Commercial': return {color: "blue"};
-            default: return {color: "gray"};
-        }
-    }
-
-    // Add land use data to the map
-    L.geoJSON(landUseData, {
-        style: style,
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup("Land Use: " + feature.properties.landuse);
-        }
-    }).addTo(map);
-</script>
+        }).addTo(map);
+    </script>
 
 </body>
 </html>
